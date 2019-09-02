@@ -18,7 +18,7 @@ def SASR_decoding(sasr):
 	return state, action, next_state, reward
 
 def SASR_decoding2(sasr):
-	n_tl = (sasr.shape[0]-1)/9
+	n_tl = int((sasr.shape[0]-1)/9)
 	state = sasr[0:n_tl*4]
 	action = sasr[n_tl*4 : n_tl*5]
 	next_state = sasr[n_tl*5: n_tl*9]
@@ -184,7 +184,7 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser(description='evaluate SARS file for SUMO environment')
 	parser.add_argument('--nt', type = int, required = False, default = num_trajectory)
-	parser.add_argument('--ts', type = int, required = False, default = truncate_size)
+	parser.add_argument('--ts', type = int, required = False, default = truncaton_size)
 	parser.add_argument('--bp', type = int, required = False, default = BP)
 	args = parser.parse_args()
 
@@ -201,7 +201,8 @@ if __name__ == "__main__":
 	agent0_filename_prescript = filename_prescript+'{}'.format(bp)
 	agent1_filename_prescript = filename_prescript+'5'
 
-	startPoints = range(0, 3000, 300)
+	# startPoints = range(0, 3000, 300)
+	startPoints = range(0, 10, 10)
 
 	print("num_trajectory = {}, truncaton_size = {}, BP = {}".format(nt, ts, bp))
 	res = np.zeros((8, len(startPoints)))

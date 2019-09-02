@@ -45,8 +45,8 @@ def train_density_ratio(SASR, policy0, policy1, den_discrete, gamma):
 		for state, action, next_state, reward in sasr:
 			discounted_t *= gamma
 			policy_ratio = policy1[state, action]/policy0[state, action]
-			den_discrete.feed_data(state, next_state, initial_state, policy_ratio, discounted_t)
-		den_discrete.feed_data(-1, initial_state, initial_state, 1, 1-discounted_t)
+			den_discrete.feed_data(state, next_state, policy_ratio)
+		# den_discrete.feed_data(-1, initial_state, initial_state, 1, 1-discounted_t)
 		
 	x, w = den_discrete.density_ratio_estimate()
 	return x, w
@@ -162,7 +162,7 @@ def Q_learning(env, num_trajectory, truncate_size, temperature = 2.0):
 
 	state = env.reset()
 	for k in range(20):
-		print 'Training for episode {}'.format(k)
+		print('Training for episode {}'.format(k))
 		for i in range(50):
 			for j in range(5000):
 				action = agent.choose_action(state, temperature)
@@ -172,7 +172,7 @@ def Q_learning(env, num_trajectory, truncate_size, temperature = 2.0):
 		pi = agent.get_pi(temperature)
 		np.save('taxi-policy/pi{}.npy'.format(k), pi)
 		SAS, f, avr_reward = roll_out(n_state, env, pi, num_trajectory, truncate_size)
-		print 'Episode {} reward = {}'.format(k, avr_reward)
+		print('Episode {} reward = {}'.format(k, avr_reward))
 		heat_map(length, f, env, 'heatmap/pi{}.pdf'.format(k))
 
 def heat_map(length, f, env, filename):
@@ -183,11 +183,11 @@ def heat_map(length, f, env, filename):
 		p_matrix[x,y] = f[state]
 	p_matrix = p_matrix / np.sum(p_matrix)
 	
-	sns.heatmap(p_matrix, cmap="YlGnBu")#, vmin = 0.0, vmax = 0.07)
-	ppPDF = PdfPages(filename)
-	ppPDF.savefig()
-	ppPDF.close()
-	plt.clf()
+	# sns.heatmap(p_matrix, cmap="YlGnBu")#, vmin = 0.0, vmax = 0.07)
+	# ppPDF = PdfPages(filename)
+	# ppPDF.savefig()
+	# ppPDF.close()
+	# plt.clf()
 
 def model_based(n_state, n_action, SASR, pi, gamma):
 	T = np.zeros([n_state, n_action, n_state], dtype = np.float32)
@@ -230,7 +230,7 @@ def model_based(n_state, n_action, SASR, pi, gamma):
 
 def run_experiment(n_state, n_action, SASR, pi0, pi1, gamma):
 	
-	den_discrete = Density_Ratio_discounted(n_state, gamma)
+	den_discrete = Density_Ratio_discrete(n_state)
 	x, w = train_density_ratio(SASR, pi0, pi1, den_discrete, gamma)
 	x = x.reshape(-1)
 	w = w.reshape(-1)
@@ -290,5 +290,5 @@ if __name__ == '__main__':
 			print('  ESTIMATOR: '+estimator_name[i]+ ', rewards = {}'.format(res[i,k]))
 		print('----------------------')
 		sys.stdout.flush()
-	np.save('result/nt={}ts={}gm={}.npy'.format(nt,ts,gm), res)
+	#np.save('result/nt={}ts={}gm={}.npy'.format(nt,ts,gm), res)
 	

@@ -10,7 +10,7 @@ import sys
 #Training Parameter
 training_batch_size = 512
 training_maximum_iteration = 3001
-TEST_NUM = 2000
+TEST_NUM = 1000 #2000
 
 class Density_Ratio_kernel(object):
 	def __init__(self, obs_dim, w_hidden, Learning_rate, reg_weight):
@@ -73,7 +73,7 @@ class Density_Ratio_kernel(object):
 	def state_to_w(self, state, obs_dim, hidden_dim_dr):
 		with tf.variable_scope('w', reuse = tf.AUTO_REUSE):
 			w = tf.ones([tf.shape(state)[0]])
-			for i in range(obs_dim/4):
+			for i in range(int(obs_dim/4)):
 				w_part_i = self.state_to_w_tl(state[:, i:(i+4)], 4, hidden_dim_dr)
 				w = w * w_part_i
 			return w
@@ -193,7 +193,8 @@ class Density_Ratio_kernel(object):
 			# policy_ratio = POLICY_RATIO[subsamples]
 			policy_ratio = (PI1[subsamples] + epsilon)/(PI0[subsamples] + epsilon)
 
-			subsamples = np.random.choice(N, batch_size)
+			batch_size_2 = batch_size+10
+			subsamples = np.random.choice(N, batch_size_2)
 			s2 = S[subsamples]
 			sn2 = SN[subsamples]
 			# policy_ratio2 = POLICY_RATIO[subsamples]
